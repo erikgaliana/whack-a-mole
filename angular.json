@@ -1,6 +1,7 @@
 {
   "version": 2,
   "projects": {
+    "services": "libs/services",
     "whack-a-mole": "apps/whack-a-mole",
     "whack-a-mole-e2e": "apps/whack-a-mole-e2e"
   }
