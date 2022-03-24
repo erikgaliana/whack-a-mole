@@ -1,0 +1,28 @@
+{
+  "root": "apps/whack-a-mole-e2e",
+  "sourceRoot": "apps/whack-a-mole-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "@nrwl/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/whack-a-mole-e2e/cypress.json",
+        "devServerTarget": "whack-a-mole:serve:development"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "whack-a-mole:serve:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/whack-a-mole-e2e/**/*.{js,ts}"]
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["whack-a-mole"]
+}
