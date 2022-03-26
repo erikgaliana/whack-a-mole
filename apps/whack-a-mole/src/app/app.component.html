@@ -1,1 +1,23 @@
-<whack-a-mole-nx-welcome></whack-a-mole-nx-welcome>
+<h2>
+    {{ whackFacade.countDown$| async}}
+</h2>
+
+<h2>
+    {{indexMole}}
+</h2>
+
+<main class="container">
+    <div *ngFor="let item of holesArray;let i=index">
+
+
+        <img *ngIf="i===indexMole; else showHole"
+            src="https://grid.gograph.com/happy-mole-cartoon-vector-art_gg68718247.jpg" />
+        <ng-template #showHole>
+            <div class="hole"></div>
+        </ng-template>
+
+
+
+    </div>
+
+</main>
