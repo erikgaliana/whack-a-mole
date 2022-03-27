@@ -1,8 +1,18 @@
 // Angular
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 
 // RxJs
-import { exhaustMap, interval, map, Observable, take } from 'rxjs';
+import {
+  BehaviorSubject,
+  exhaustMap,
+  filter,
+  interval,
+  map,
+  Observable,
+  switchMap,
+  take,
+  withLatestFrom,
+} from 'rxjs';
 
 // NgRx
 import { select, Store } from '@ngrx/store';
@@ -12,30 +22,36 @@ import { GameState } from '../store/reducers/reducer-map';
 import * as fromSelectors from '../store/selectors/whack.selectors';
 import { WhackActions } from '../store/actions/action-types';
 
-// Models
-import { GameModel } from '../../../models/whack.models';
-
 const INTERVAL_VALUE = 30;
 @Injectable()
-export class WhackFacade {
+export class WhackFacade implements OnDestroy {
   // DATA OBSERVABLES
-  gameData$: Observable<GameModel> = this.parentStore.pipe(
-    select(fromSelectors.getGameData)
+  score$: Observable<number> = this.parentStore.pipe(
+    select(fromSelectors.getGameScore)
   );
 
-  countDown$: Observable<number> = interval(1000).pipe(
-    map((index) => INTERVAL_VALUE - index),
-    take(INTERVAL_VALUE + 1)
+  topScore$: Observable<number> = this.parentStore.pipe(
+    select(fromSelectors.getGameTopScore)
+  );
+
+  startGame$ = new BehaviorSubject(false);
+
+  countDown$: Observable<number> = this.startGame$.pipe(
+    filter((started) => !!started),
+    switchMap(() => {
+      return interval(1000).pipe(
+        map((index) => INTERVAL_VALUE - index),
+        take(INTERVAL_VALUE + 1)
+      );
+    })
   );
 
   holeIndexDelayed$: Observable<number> = this.countDown$.pipe(
-    exhaustMap((count) => {
+    exhaustMap(() => {
       const innerInterval = Math.floor(Math.random() * 3 + 1);
-
       return interval(innerInterval * 1000).pipe(
         map(() => {
           const randomHole = Math.floor(Math.random() * 6);
-
           return randomHole;
         }),
         take(1)
@@ -43,13 +59,33 @@ export class WhackFacade {
     })
   );
 
-  isGameDataLoaded$: Observable<boolean> = this.parentStore.pipe(
-    select(fromSelectors.getIsGameDataLoaded)
-  );
-
   constructor(private parentStore: Store<GameState>) {}
 
-  loadItemsData(): void {
-    this.parentStore.dispatch(WhackActions.loadGame());
+  ngOnDestroy(): void {
+    this.startGame$.next(false);
+    this.startGame$.complete();
+  }
+
+  startGame(): void {
+    this.startGame$.next(true);
+  }
+
+  updateScore(): void {
+    this.score$
+      .pipe(take(1), withLatestFrom(this.topScore$))
+      .subscribe(([score, topScore]: [number, number]) => {
+        score = score + 1;
+        this.parentStore.dispatch(WhackActions.updateScore({ score }));
+
+        if (score > topScore) {
+          this.parentStore.dispatch(
+            WhackActions.updateTopScore({ topScore: score })
+          );
+        }
+      });
+  }
+
+  clearDataStore() {
+    this.parentStore.dispatch(WhackActions.clearData());
   }
 }
