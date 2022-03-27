@@ -12,12 +12,12 @@ export const getGameDataState = createSelector(
   (state) => state.gameDataState
 );
 
-export const getGameData = createSelector(
+export const getGameScore = createSelector(
   getGameDataState,
-  (state) => state.game
+  (state) => state.score
 );
 
-export const getIsGameDataLoaded = createSelector(
+export const getGameTopScore = createSelector(
   getGameDataState,
-  (state) => !!state.game
+  (state) => state.topScore
 );
