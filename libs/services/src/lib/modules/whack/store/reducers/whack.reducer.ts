@@ -39,12 +39,6 @@ const whackDataReducer = createReducer(
       score: action.score,
     };
   }),
-  on(WhackActions.updateScore, (state, action) => {
-    return {
-      ...state,
-      score: action.score,
-    };
-  }),
   on(WhackActions.updateTopScore, (state, action) => {
     return {
       ...state,
