@@ -16,7 +16,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@whack-a-mole/services": ["libs/services/src/index.ts"]
+      "@whack-a-mole/services": ["libs/services/src/index.ts"],
+      "@whack-a-mole/models": ["libs/services/src/lib/models"]
     }
   },
   "exclude": ["node_modules", "tmp"]
