@@ -1,0 +1,16 @@
+<h2>time : {{ whackFacade.countDown$ | async }}</h2>
+
+<h2>score : {{ whackFacade.score$ | async }}</h2>
+<h2>Top score : {{ whackFacade.topScore$ | async }}</h2>
+
+<button id="start" (click)="startGame()">Start</button>
+
+<main class="container">
+    <div *ngFor="let item of holesArray; let i = index">
+        <img *ngIf="i === indexMole; else showHole"
+            src="https://grid.gograph.com/happy-mole-cartoon-vector-art_gg68718247.jpg" (click)="controlClick(i)" />
+        <ng-template #showHole>
+            <div class="hole"></div>
+        </ng-template>
+    </div>
+</main>
