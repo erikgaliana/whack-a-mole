@@ -7,9 +7,13 @@
 
 .container {
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
   flex-wrap: wrap;
+  height: 600px;
+  width: auto;
+  background-color: grey;
+}
+
+.mole {
   margin: 50px;
 }
 
