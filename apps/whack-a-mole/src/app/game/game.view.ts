@@ -21,8 +21,6 @@ import { WhackFacade } from '@whack-a-mole/services';
 export class GameViewComponent implements OnInit, OnDestroy {
   indexMole: number;
 
-  holesArray: number[] = [0, 0, 0, 0, 0, 0];
-
   destroyed$: Subject<boolean> = new Subject<boolean>();
 
   stopGame$: Subject<boolean> = new Subject<boolean>();
@@ -33,7 +31,6 @@ export class GameViewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.buildMolesClickedSubscription();
-    this.buildDisplayMolesSubscription();
   }
 
   ngOnDestroy(): void {
@@ -50,20 +47,6 @@ export class GameViewComponent implements OnInit, OnDestroy {
 
   startGame(): void {
     this.whackFacade.startGame();
-  }
-
-  private buildDisplayMolesSubscription(): void {
-    this.whackFacade.holeIndexDelayed$
-      .pipe(
-        filter((index) => !!index),
-        takeUntil(this.destroyed$)
-      )
-      .subscribe({
-        next: (index) => (this.indexMole = index),
-        complete: () => {
-          this.stopGame$.next(true);
-        },
-      });
   }
 
   private buildMolesClickedSubscription(): void {
