@@ -4,9 +4,10 @@
 <main class="container">
     <ng-container *ngIf="(whackFacade.startGame$| async)===false; else showGame">
         <section class="start">
-            <button (click)="startGame()">Start</button>
+            <button (click)="startGame()">{{ (whackFacade.endGame$| async) ? 'Try Again ?': 'Start' }}</button>
         </section>
     </ng-container>
+
     <ng-template #showGame>
         <ng-container *ngIf="whackFacade.molesList$ | async as moleList">
             <div *ngFor="let mole of moleList; let i=index;trackBy: trackByItems" class="mole">
