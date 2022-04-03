@@ -23,7 +23,9 @@ import * as fromSelectors from '../store/selectors/whack.selectors';
 import { WhackActions } from '../store/actions/action-types';
 
 const INTERVAL_VALUE = 30;
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class WhackFacade implements OnDestroy {
   // DATA OBSERVABLES
   score$: Observable<number> = this.parentStore.pipe(
