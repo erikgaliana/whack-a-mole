@@ -21,6 +21,7 @@ import { select, Store } from '@ngrx/store';
 import { GameState } from '../store/reducers/reducer-map';
 import * as fromSelectors from '../store/selectors/whack.selectors';
 import { WhackActions } from '../store/actions/action-types';
+import { Mole } from '../../../models/whack-models';
 
 const INTERVAL_VALUE = 30;
 @Injectable({
@@ -28,6 +29,11 @@ const INTERVAL_VALUE = 30;
 })
 export class WhackFacade implements OnDestroy {
   // DATA OBSERVABLES
+
+  molesList$: Observable<Mole[]> = this.parentStore.pipe(
+    select(fromSelectors.getMolesList)
+  );
+
   score$: Observable<number> = this.parentStore.pipe(
     select(fromSelectors.getGameScore)
   );
@@ -61,6 +67,15 @@ export class WhackFacade implements OnDestroy {
     })
   );
 
+  whackInitData: Mole[] = [
+    { lives: 1, show: true },
+    { lives: 1, show: true },
+    { lives: 1, show: true },
+    { lives: 1, show: true },
+    { lives: 1, show: true },
+    { lives: 1, show: true },
+  ];
+
   constructor(private parentStore: Store<GameState>) {}
 
   ngOnDestroy(): void {
@@ -70,6 +85,36 @@ export class WhackFacade implements OnDestroy {
 
   startGame(): void {
     this.startGame$.next(true);
+    this.parentStore.dispatch(
+      WhackActions.loadData({ molesList: this.whackInitData })
+    );
+    this.displayMoles();
+  }
+
+  displayMoles(): void {
+    this.countDown$
+      .pipe(
+        exhaustMap(() => {
+          return this.molesList$.pipe(
+            map((mole) => {
+              const moleListUpdated: Mole[] = mole.map((item) => {
+                const moleUpdated: Mole = {
+                  show: Math.random() < 0.5,
+                  lives: item.lives,
+                };
+                return moleUpdated;
+              });
+              return moleListUpdated;
+            }),
+            take(1)
+          );
+        })
+      )
+      .subscribe((items) =>
+        this.parentStore.dispatch(
+          WhackActions.updateMoles({ molesList: items })
+        )
+      );
   }
 
   updateScore(): void {
