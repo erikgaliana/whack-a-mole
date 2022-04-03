@@ -1,18 +1,16 @@
 <h2>Score : {{ whackFacade.score$ | async }}</h2>
 <h2>Highest Score : {{ whackFacade.topScore$ | async }}</h2>
 
-
-
 <main class="container">
     <ng-container *ngIf="(whackFacade.startGame$| async)===false; else showGame">
         <section class="start">
-            <button id="start" (click)="startGame()">Start</button>
+            <button (click)="startGame()">Start</button>
         </section>
     </ng-container>
     <ng-template #showGame>
         <ng-container *ngIf="whackFacade.molesList$ | async as moleList">
-            <div *ngFor="let mole of moleList; let i = index" class="mole">
-                <img *ngIf="mole.show; else showHole"
+            <div *ngFor="let mole of moleList; let i=index;trackBy: trackByItems" class="mole">
+                <img *ngIf="mole.show&&mole.lives>0; else showHole"
                     src="https://grid.gograph.com/happy-mole-cartoon-vector-art_gg68718247.jpg"
                     (click)="controlClick(i)" />
                 <ng-template #showHole>
