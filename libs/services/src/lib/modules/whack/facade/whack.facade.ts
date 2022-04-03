@@ -6,6 +6,7 @@ import {
   BehaviorSubject,
   exhaustMap,
   filter,
+  finalize,
   interval,
   map,
   Observable,
@@ -44,12 +45,19 @@ export class WhackFacade implements OnDestroy {
 
   startGame$ = new BehaviorSubject(false);
 
+  endGame$ = new BehaviorSubject(false);
+
   countDown$: Observable<number> = this.startGame$.pipe(
     filter((started) => !!started),
     switchMap(() => {
       return interval(1000).pipe(
         map((index) => INTERVAL_VALUE - index),
-        take(INTERVAL_VALUE + 1)
+        take(INTERVAL_VALUE + 1),
+        finalize(() => {
+          this.endGame$.next(true);
+          this.startGame$.next(false);
+          this.parentStore.dispatch(WhackActions.updateScore({ score: 0 }));
+        })
       );
     })
   );
@@ -85,6 +93,7 @@ export class WhackFacade implements OnDestroy {
 
   startGame(): void {
     this.startGame$.next(true);
+    this.endGame$.next(false);
     this.parentStore.dispatch(
       WhackActions.loadData({ molesList: this.whackInitData })
     );
