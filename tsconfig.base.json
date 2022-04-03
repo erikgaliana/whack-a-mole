@@ -17,7 +17,7 @@
     "baseUrl": ".",
     "paths": {
       "@whack-a-mole/services": ["libs/services/src/index.ts"],
-      "@whack-a-mole/models": ["libs/services/src/lib/models"]
+      "@whack-a-mole/models": ["libs/services/src/lib/models/whack-models.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
