@@ -68,12 +68,12 @@ export class WhackFacade implements OnDestroy {
   );
 
   whackInitData: Mole[] = [
-    { lives: 1, show: true },
-    { lives: 1, show: true },
-    { lives: 1, show: true },
-    { lives: 1, show: true },
-    { lives: 1, show: true },
-    { lives: 1, show: true },
+    { id: 0, lives: 1, show: false },
+    { id: 1, lives: 1, show: false },
+    { id: 2, lives: 1, show: false },
+    { id: 3, lives: 1, show: false },
+    { id: 4, lives: 1, show: false },
+    { id: 5, lives: 1, show: false },
   ];
 
   constructor(private parentStore: Store<GameState>) {}
@@ -99,7 +99,8 @@ export class WhackFacade implements OnDestroy {
             map((mole) => {
               const moleListUpdated: Mole[] = mole.map((item) => {
                 const moleUpdated: Mole = {
-                  show: Math.random() < 0.5,
+                  id: item.id,
+                  show: item.lives > 0 ? Math.random() < 0.5 : item.show,
                   lives: item.lives,
                 };
                 return moleUpdated;
@@ -117,13 +118,32 @@ export class WhackFacade implements OnDestroy {
       );
   }
 
+  moleClicked(id: number) {
+    this.molesList$
+      .pipe(take(1), withLatestFrom(this.score$))
+      .subscribe(([moles, score]) => {
+        const molesToWhack = moles.map((mole) => {
+          const moleUpdated: Mole = {
+            id: mole.id,
+            lives: mole.id === id ? 0 : mole.lives,
+            show: mole.show,
+          };
+          return moleUpdated;
+        });
+
+        this.parentStore.dispatch(
+          WhackActions.updateMoles({ molesList: molesToWhack })
+        );
+
+        score = score + 1;
+        this.parentStore.dispatch(WhackActions.updateScore({ score }));
+      });
+  }
+
   updateScore(): void {
     this.score$
       .pipe(take(1), withLatestFrom(this.topScore$))
-      .subscribe(([score, topScore]: [number, number]) => {
-        score = score + 1;
-        this.parentStore.dispatch(WhackActions.updateScore({ score }));
-
+      .subscribe(([score, topScore]) => {
         if (score > topScore) {
           this.parentStore.dispatch(
             WhackActions.updateTopScore({ topScore: score })
