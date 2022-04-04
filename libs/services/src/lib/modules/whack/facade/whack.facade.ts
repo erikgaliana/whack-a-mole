@@ -7,6 +7,7 @@ import {
   exhaustMap,
   filter,
   finalize,
+  forkJoin,
   interval,
   map,
   Observable,
@@ -62,19 +63,6 @@ export class WhackFacade implements OnDestroy {
     })
   );
 
-  holeIndexDelayed$: Observable<number> = this.countDown$.pipe(
-    exhaustMap(() => {
-      const innerInterval = Math.floor(Math.random() * 3 + 1);
-      return interval(innerInterval * 1000).pipe(
-        map(() => {
-          const randomHole = Math.floor(Math.random() * 6);
-          return randomHole;
-        }),
-        take(1)
-      );
-    })
-  );
-
   whackInitData: Mole[] = [
     { id: 0, lives: 1, show: false },
     { id: 1, lives: 1, show: false },
@@ -89,6 +77,7 @@ export class WhackFacade implements OnDestroy {
   ngOnDestroy(): void {
     this.startGame$.next(false);
     this.startGame$.complete();
+    this.endGame$.complete();
   }
 
   startGame(): void {
@@ -105,16 +94,22 @@ export class WhackFacade implements OnDestroy {
       .pipe(
         exhaustMap(() => {
           return this.molesList$.pipe(
-            map((mole) => {
-              const moleListUpdated: Mole[] = mole.map((item) => {
-                const moleUpdated: Mole = {
-                  id: item.id,
-                  show: item.lives > 0 ? Math.random() < 0.5 : item.show,
-                  lives: item.lives,
-                };
-                return moleUpdated;
+            switchMap((moles) => {
+              const moleListUpdated: Observable<Mole>[] = moles.map((item) => {
+                const innerInterval = Math.floor(Math.random() * 3 + 1);
+                return interval(innerInterval * 1000).pipe(
+                  map(() => {
+                    const moleUpdated: Mole = {
+                      id: item.id,
+                      show: item.lives > 0 ? Math.random() < 0.5 : item.show,
+                      lives: item.lives,
+                    };
+                    return moleUpdated;
+                  }),
+                  take(1)
+                );
               });
-              return moleListUpdated;
+              return forkJoin(...moleListUpdated);
             }),
             take(1)
           );
