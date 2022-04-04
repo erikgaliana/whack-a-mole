@@ -13,8 +13,20 @@
   background-color: grey;
 }
 
+.start {
+  position: absolute;
+  top: 50%;
+}
+
 .mole {
   margin: 50px;
+}
+
+.count div {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-right: 80px;
 }
 
 img {
