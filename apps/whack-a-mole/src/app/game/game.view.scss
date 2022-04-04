@@ -1,0 +1,35 @@
+.hole {
+  width: 200px;
+  height: 200px;
+  border: 1px solid black;
+  border-radius: 50%;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  height: 600px;
+  width: auto;
+  background-color: grey;
+}
+
+.start {
+  position: absolute;
+  top: 50%;
+}
+
+.mole {
+  margin: 50px;
+}
+
+.count div {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-right: 80px;
+}
+
+img {
+  width: 200px;
+  height: 200px;
+}
