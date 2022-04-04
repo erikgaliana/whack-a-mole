@@ -12,6 +12,11 @@ export const getGameDataState = createSelector(
   (state) => state.gameDataState
 );
 
+export const getMolesList = createSelector(
+  getGameDataState,
+  (state) => state.molesList
+);
+
 export const getGameScore = createSelector(
   getGameDataState,
   (state) => state.score
